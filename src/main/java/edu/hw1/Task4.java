@@ -1,8 +1,8 @@
 package edu.hw1;
 
-public class StringUtils {
+public class Task4 {
 
-    private StringUtils() {
+    private Task4() {
     }
 
     //CHECKSTYLE:OFF: MagicNumber

@@ -1,6 +1,6 @@
 package edu.hw1;
 
-public class ChessUtils {
+public class Task8 {
     private static final int[][] KNIGHT_MOVES = {
         {-2, -1},
         {-1, -2},
@@ -12,7 +12,7 @@ public class ChessUtils {
         {1, 2}
     };
 
-    private ChessUtils() {
+    private Task8() {
     }
 
     public static boolean knightBoardCapture(int[][] board) {

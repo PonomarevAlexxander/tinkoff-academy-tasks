@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class ArraysUtilsTest {
+public class Task3Test {
     @Test
     @DisplayName("Test isNestable on normal data")
     void isNestableTest() {
@@ -26,7 +26,7 @@ public class ArraysUtilsTest {
             int[] b = Arrays.stream(entry.getKey()[1])
                 .mapToInt(Integer::intValue)
                 .toArray();
-            Boolean result = ArraysUtils.isNestable(a, b);
+            Boolean result = Task3.isNestable(a, b);
             assertThat(result)
                 .isEqualTo(entry.getValue());
         }
@@ -35,13 +35,13 @@ public class ArraysUtilsTest {
     @Test
     @DisplayName("Test isNestable on null data")
     void isNullNestableTest() {
-        Boolean result = ArraysUtils.isNestable(null, new int[] {1, 2, 3});
+        Boolean result = Task3.isNestable(null, new int[] {1, 2, 3});
         assertThat(result)
             .isEqualTo(true);
-        result = ArraysUtils.isNestable(new int[] {1, 2, 3}, null);
+        result = Task3.isNestable(new int[] {1, 2, 3}, null);
         assertThat(result)
             .isEqualTo(false);
-        result = ArraysUtils.isNestable(null, null);
+        result = Task3.isNestable(null, null);
         assertThat(result)
             .isEqualTo(false);
     }

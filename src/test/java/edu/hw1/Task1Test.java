@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class VideoUtilsTest {
+public class Task1Test {
     @Test
     @DisplayName("Test minutesToSeconds")
     void minutesToSecondsTest() {
@@ -22,7 +22,7 @@ public class VideoUtilsTest {
         samples.put("00:00", 0);
 
         for (Map.Entry<String, Integer> entry : samples.entrySet()) {
-            Integer result = VideoUtils.minutesToSeconds(entry.getKey());
+            Integer result = Task1.minutesToSeconds(entry.getKey());
             assertThat(result)
                 .isEqualTo(entry.getValue());
         }
@@ -32,6 +32,6 @@ public class VideoUtilsTest {
     @DisplayName("Test  minutesToSeconds on null data")
     @NullSource
     void minutesToSecondsOnNullTest(String data) {
-        assertThrows(NullPointerException.class, () -> VideoUtils.minutesToSeconds(data));
+        assertThrows(NullPointerException.class, () -> Task1.minutesToSeconds(data));
     }
 }

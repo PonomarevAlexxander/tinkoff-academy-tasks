@@ -3,9 +3,9 @@ package edu.hw1;
 import java.util.Arrays;
 import java.util.OptionalInt;
 
-public class ArraysUtils {
+public class Task3 {
 
-    private ArraysUtils() {
+    private Task3() {
     }
 
     public static boolean isNestable(int[] array, int[] container) {

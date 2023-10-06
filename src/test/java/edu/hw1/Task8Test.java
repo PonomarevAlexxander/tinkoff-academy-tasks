@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class ChessUtilsTest {
+public class Task8Test {
     @Test
     @DisplayName("Test knightBoardCapture")
     void knightBoardCaptureTest() {
@@ -28,9 +28,9 @@ public class ChessUtilsTest {
             {1, 0, 0, 0, 1, 0, 1, 0},
             {0, 0, 0, 1, 0, 1, 0, 1}
         };
-        assertThat(ChessUtils.knightBoardCapture(board1))
+        assertThat(Task8.knightBoardCapture(board1))
             .isEqualTo(true);
-        assertThat(ChessUtils.knightBoardCapture(board2))
+        assertThat(Task8.knightBoardCapture(board2))
             .isEqualTo(false);
     }
 }

@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
-public class StringUtilsTest {
+public class Task4Test {
     @ParameterizedTest
     @DisplayName("Test fixString")
     @CsvSource({
@@ -17,7 +17,7 @@ public class StringUtilsTest {
         ","
     })
     void fixStringTest(String data, String expectedAnswer) {
-        String result = StringUtils.fixString(data);
+        String result = Task4.fixString(data);
         assertThat(result)
             .isEqualTo(expectedAnswer);
         if (data != null) {
