@@ -15,6 +15,7 @@ public class Task6 {
         }
         return doCountK(num);
     }
+    //CHECKSTYLE:ON: MagicNumber
 
     private static int doCountK(int num) {
         if (num == KAPREKAR_CONSTANT) {
@@ -43,10 +44,10 @@ public class Task6 {
 
     private static int convertToNumber(char[] arr) {
         int result = 0;
-        for (int i = (arr.length - 1), ratio = 1; i >= 0; --i, ratio *= 10) {
+        final int BASE = 10;
+        for (int i = (arr.length - 1), ratio = 1; i >= 0; --i, ratio *= BASE) {
             result += (arr[i] - '0') * ratio;
         }
         return result;
     }
-    //CHECKSTYLE:ON: MagicNumber
 }

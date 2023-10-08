@@ -5,13 +5,13 @@ public class Task4 {
     private Task4() {
     }
 
-    //CHECKSTYLE:OFF: MagicNumber
     public static String fixString(String str) {
         if (str == null) {
             return null;
         }
         StringBuilder fixedString = new StringBuilder();
-        for (int i = 1; i < str.length(); i += (i % 2 == 1 ? -1 : 3)) {
+        final int STEP_TO_NEXT_PAIR = 3;
+        for (int i = 1; i < str.length(); i += (i % 2 == 1 ? -1 : STEP_TO_NEXT_PAIR)) {
             fixedString.append(str.charAt(i));
         }
         for (int i = fixedString.length(); i < str.length(); ++i) {
@@ -19,5 +19,4 @@ public class Task4 {
         }
         return fixedString.toString();
     }
-    //CHECKSTYLE:ON: MagicNumber
 }

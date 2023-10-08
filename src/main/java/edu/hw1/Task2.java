@@ -1,15 +1,15 @@
 package edu.hw1;
 
 public class Task2 {
+    private static final int BASE = 10;
+
     private Task2() {
     }
 
-    //CHECKSTYLE:OFF: MagicNumber
     public static int countDigits(int number) {
-        if (number < 10) {
+        if (number < BASE) {
             return 1;
         }
-        return 1 + countDigits(number / 10);
+        return 1 + countDigits(number / BASE);
     }
-    //CHECKSTYLE:ON: MagicNumber
 }
