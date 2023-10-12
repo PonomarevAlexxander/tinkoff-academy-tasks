@@ -37,12 +37,12 @@ public class Task3Test {
     void isNullNestableTest() {
         Boolean result = Task3.isNestable(null, new int[] {1, 2, 3});
         assertThat(result)
-            .isEqualTo(true);
+            .isTrue();
         result = Task3.isNestable(new int[] {1, 2, 3}, null);
         assertThat(result)
-            .isEqualTo(false);
+            .isFalse();
         result = Task3.isNestable(null, null);
         assertThat(result)
-            .isEqualTo(false);
+            .isFalse();
     }
 }
