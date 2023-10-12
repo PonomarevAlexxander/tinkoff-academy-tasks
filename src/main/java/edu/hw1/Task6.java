@@ -4,18 +4,17 @@ import java.util.Arrays;
 
 public class Task6 {
     private static final int KAPREKAR_CONSTANT = 6174;
+    private static final int DIGITS_IN_NUMBER = 4;
 
     private Task6() {
     }
 
-    //CHECKSTYLE:OFF: MagicNumber
     public static int countK(int num) {
-        if (Task2.countDigits(num) != 4) {
+        if (Task2.countDigits(num) != DIGITS_IN_NUMBER) {
             throw new IllegalArgumentException("Number has to have 4 digits.");
         }
         return doCountK(num);
     }
-    //CHECKSTYLE:ON: MagicNumber
 
     private static int doCountK(int num) {
         if (num == KAPREKAR_CONSTANT) {
