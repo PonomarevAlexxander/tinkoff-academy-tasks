@@ -9,15 +9,25 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-class BoundingRectangleTest {
+class RectangleTest {
     @ParameterizedTest
-    @DisplayName("Test BoundingRectangle getArea on valid data")
-    @MethodSource("provideBoundingRectangles")
-    void testBoundingRectangleArea(BoundingRectangle obj, double area) {
+    @DisplayName("Test Rectangle getArea on valid data")
+    @MethodSource("provideRectangles")
+    void testBoundingRectangleArea_on_valid_data(Rectangle obj, double area) {
         assertThat(obj.getArea())
             .isEqualTo(area);
     }
-    private static Stream<Arguments> provideBoundingRectangles() {
+
+    @ParameterizedTest
+    @DisplayName("Test Rectangle getArea on LSP")
+    @MethodSource("provideRectangles")
+    void testBoundingRectangleArea_on_LSP(Rectangle obj, double area) {
+        double newHeight = 100;
+        Rectangle rect = obj.setHeight(100);
+        assertThat(rect.getArea())
+            .isEqualTo(area / obj.getHeight() * newHeight);
+    }
+    private static Stream<Arguments> provideRectangles() {
         return Stream.of(
             Arguments.of(new Rectangle(10, 20), 200),
             Arguments.of(new Square(20), 400),
@@ -34,7 +44,7 @@ class BoundingRectangleTest {
     })
     void testBoundingRectangleOnInvalidData(double height, double width) {
         assertThatThrownBy(() -> {
-            BoundingRectangle obj = new Rectangle(height, width);
+            Rectangle obj = new Rectangle(height, width);
         })
             .isInstanceOf(IllegalArgumentException.class)
             .message()
