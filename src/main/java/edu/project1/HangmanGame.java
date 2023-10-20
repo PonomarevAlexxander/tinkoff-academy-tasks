@@ -5,16 +5,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public final class HangmanGame {
+    private static final String EXIT = "/exit";
+
     private final GameDictionary dictionary;
     private final GallowsProvider gallows;
-    private SortedSet<Character> remainingLetters;
     private final ConsoleWriter consoleWriter;
-    private String currentWord;
-    private StringBuffer maskedWord;
-
     private final Scanner scanner;
 
-    private static final String EXIT = "/exit";
+    private SortedSet<Character> remainingLetters;
+    private String currentWord;
+    private StringBuffer maskedWord;
 
     public HangmanGame(
         GameDictionary dictionary,
