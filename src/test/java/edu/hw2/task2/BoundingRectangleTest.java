@@ -20,19 +20,13 @@ class RectangleTest {
 
     @ParameterizedTest
     @DisplayName("Test Rectangle getArea on LSP")
-    @MethodSource("provideRectangles")
-    void testBoundingRectangleArea_on_LSP(Rectangle obj, double area) {
-        double newHeight = 100;
-        Rectangle rect = obj.setHeight(100);
+    @MethodSource("provideRectanglesAndNewParameters")
+    void testBoundingRectangleArea_on_LSP(Rectangle obj, double height, double width, double area) {
+        Rectangle rect = obj
+            .setHeight(height)
+            .setWidth(width);
         assertThat(rect.getArea())
-            .isEqualTo(area / obj.getHeight() * newHeight);
-    }
-    private static Stream<Arguments> provideRectangles() {
-        return Stream.of(
-            Arguments.of(new Rectangle(10, 20), 200),
-            Arguments.of(new Square(20), 400),
-            Arguments.of(new Rectangle(1, 200), 200)
-        );
+            .isEqualTo(area);
     }
 
     @ParameterizedTest
@@ -43,11 +37,25 @@ class RectangleTest {
         "100, 0"
     })
     void testBoundingRectangleOnInvalidData(double height, double width) {
-        assertThatThrownBy(() -> {
-            Rectangle obj = new Rectangle(height, width);
-        })
+        assertThatThrownBy(() -> new Rectangle(height, width))
             .isInstanceOf(IllegalArgumentException.class)
             .message()
             .isNotEmpty();
+    }
+
+    private static Stream<Arguments> provideRectangles() {
+        return Stream.of(
+            Arguments.of(new Rectangle(10, 20), 200),
+            Arguments.of(new Square(20), 400),
+            Arguments.of(new Rectangle(1, 200), 200)
+        );
+    }
+
+    private static Stream<Arguments> provideRectanglesAndNewParameters() {
+        return Stream.of(
+            Arguments.of(new Rectangle(10, 20), 10, 10, 100),
+            Arguments.of(new Square(20), 2, 200, 400),
+            Arguments.of(new Rectangle(1, 200), 90, 2, 180)
+        );
     }
 }
