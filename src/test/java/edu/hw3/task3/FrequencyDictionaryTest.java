@@ -7,7 +7,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class FrequencyDictionaryTest {
     @ParameterizedTest
@@ -15,6 +17,13 @@ class FrequencyDictionaryTest {
     void test_FrequencyDictionary_on_normal_data(List<T> objects, Map<T, Integer> expected) {
         assertThat(FrequencyDictionary.freqDict(objects))
             .isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @NullSource <T>
+    void test_FrequencyDictionary_on_null_data(List<T> objects) {
+        assertThatThrownBy(() -> FrequencyDictionary.freqDict(objects))
+            .isInstanceOf(NullPointerException.class);
     }
 
     private static Stream<Arguments> provideFrequencyDictionary() {
