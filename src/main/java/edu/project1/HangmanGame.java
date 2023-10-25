@@ -24,7 +24,7 @@ public final class HangmanGame {
 
     private SortedSet<Character> remainingLetters;
     private String currentWord;
-    private StringBuffer maskedWord;
+    private StringBuilder maskedWord;
 
     public HangmanGame(
         GameDictionary dictionary,
@@ -49,7 +49,7 @@ public final class HangmanGame {
             consoleWriter.printFinalMessage();
             return GameState.EXIT;
         }
-        maskedWord = new StringBuffer(currentWord.replaceAll(".", "."));
+        maskedWord = new StringBuilder(currentWord.replaceAll(".", "."));
         consoleWriter.printWordToGuess(maskedWord.toString());
         gallows.destroyGallows();
         updateLetters();
