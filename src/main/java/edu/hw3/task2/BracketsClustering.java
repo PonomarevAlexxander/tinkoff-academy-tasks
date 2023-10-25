@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class BracketsClustering {
+    private static final String ERROR_PARENTHESES = "string has wrong brackets parentheses";
+
+    private BracketsClustering() {
+
+    }
+
     public static List<String> clusterize(String expression) {
         Objects.requireNonNull(expression);
 
@@ -21,7 +27,7 @@ public class BracketsClustering {
                 clusterLength++;
             }
             if (stabilizer < 0) {
-                throw new IllegalArgumentException("String has wrong brackets parentheses");
+                throw new IllegalArgumentException(ERROR_PARENTHESES);
             }
             if (stabilizer == 0 && clusterLength != 0) {
                 result.add(expression.substring(index - clusterLength + 1, index + 1));
@@ -29,7 +35,7 @@ public class BracketsClustering {
             }
         }
         if (stabilizer > 0) {
-            throw new IllegalArgumentException("String has wrong brackets parentheses");
+            throw new IllegalArgumentException(ERROR_PARENTHESES);
         }
         return result;
     }

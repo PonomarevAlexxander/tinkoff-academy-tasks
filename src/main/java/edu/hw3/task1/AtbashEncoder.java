@@ -3,6 +3,10 @@ package edu.hw3.task1;
 import java.util.Objects;
 
 public class AtbashEncoder {
+    private AtbashEncoder() {
+
+    }
+
     public static String atbash(String sentence) {
         Objects.requireNonNull(sentence);
         StringBuilder result = new StringBuilder(sentence.length());

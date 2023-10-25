@@ -8,9 +8,14 @@ public class Contacts {
     private static final String ASCENDING_ORDER = "ASC";
     private static final String DESCENDING_ORDER = "DESC";
 
+    private Contacts() {
+
+    }
+
+    @SuppressWarnings("MagicNumber")
     public static List<Object> parseContacts(List<String> contacts, String compareFormat) {
-        if (compareFormat == null ||
-            !(compareFormat.equals(ASCENDING_ORDER) || compareFormat.equals(DESCENDING_ORDER))) {
+        if (compareFormat == null
+            || !(compareFormat.equals(ASCENDING_ORDER) || compareFormat.equals(DESCENDING_ORDER))) {
             throw new IllegalArgumentException("provided compare format is not available");
         }
         if (contacts == null) {
@@ -21,7 +26,7 @@ public class Contacts {
         Comparator<String> comparator = (o1, o2) -> {
             String[] firstName = o1.split(" ");
             String[] secondName = o2.split(" ");
-            if (firstName.length + firstName.length != 4) {
+            if (firstName.length + firstName.length != 4) {  // sum of length will be 4 if full names provided
                 return firstName[0].compareTo(secondName[0]);
             }
             return firstName[1].compareTo(secondName[1]);
