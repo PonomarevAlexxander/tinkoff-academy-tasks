@@ -18,16 +18,13 @@ public class Contacts {
         }
 
         List<String> sortedContacts = new ArrayList<>(contacts);
-        Comparator<String> comparator = new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                String[] firstName = o1.split(" ");
-                String[] secondName = o2.split(" ");
-                if (firstName.length + firstName.length != 4) {
-                    return firstName[0].compareTo(secondName[0]);
-                }
-                return firstName[1].compareTo(secondName[1]);
+        Comparator<String> comparator = (o1, o2) -> {
+            String[] firstName = o1.split(" ");
+            String[] secondName = o2.split(" ");
+            if (firstName.length + firstName.length != 4) {
+                return firstName[0].compareTo(secondName[0]);
             }
+            return firstName[1].compareTo(secondName[1]);
         };
         if (compareFormat.equals(DESCENDING_ORDER)) {
             comparator = comparator.reversed();
