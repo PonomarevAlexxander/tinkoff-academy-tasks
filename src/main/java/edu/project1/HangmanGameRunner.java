@@ -1,6 +1,6 @@
 package edu.project1;
 
-import java.util.List;
+    import java.util.List;
 import java.util.Scanner;
 
 public class HangmanGameRunner {
@@ -16,7 +16,9 @@ public class HangmanGameRunner {
             HangmanGame gameDriver = new HangmanGame(dictionary, gallows, console, scanner);
 
             gameDriver.initSession();
-            while (gameDriver.startTurn()) {
+            HangmanGame.GameState state = HangmanGame.GameState.CONTINUE;
+            while (state == HangmanGame.GameState.CONTINUE) {
+                state = gameDriver.startTurn();
             }
         }
     }

@@ -5,6 +5,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public final class HangmanGame {
+    public enum GameState {
+        WIN,
+        LOSE,
+        WRONG_INPUT,
+        SUCCESS,
+        FAILURE,
+        EXIT,
+        CONTINUE
+    }
+
     private static final String EXIT = "/exit";
 
     private final GameDictionary dictionary;
@@ -33,91 +43,113 @@ public final class HangmanGame {
         consoleWriter.printGreeting();
     }
 
-    @SuppressWarnings("ReturnCount")
-    public boolean startTurn() {
+    public GameState startTurn() {
         currentWord = dictionary.getNewWord();
         if (currentWord == null) {
             consoleWriter.printFinalMessage();
-            return false;
+            return GameState.EXIT;
         }
         maskedWord = new StringBuffer(currentWord.replaceAll(".", "."));
         consoleWriter.printWordToGuess(maskedWord.toString());
         gallows.destroyGallows();
         updateLetters();
 
+        GameState state = runTurn();
+        switch (state) {
+            case EXIT -> {
+                return state;
+            }
+            case LOSE -> {
+                consoleWriter.printLoseMessage();
+                consoleWriter.printWordToGuess(currentWord);
+            }
+            default -> {
+            }
+        }
+        return exitGame();
+    }
+
+    private GameState runTurn() {
         while (gallows.getLeftAttempts() > 0) {
             consoleWriter.printAskingMessage();
             String answer = scanner.nextLine();
             if (answer.equals(EXIT)) {
                 consoleWriter.printFinalMessage();
-                return false;
+                return GameState.EXIT;
             }
             if (answer.isBlank()) {
                 continue;
             }
 
-            Boolean success;
+            GameState state;
             if (answer.length() > 1) {
-                success = tryToGuessWord(answer);
-                if (success) {
-                    return exitGame();
-                }
+                state = tryToGuessWord(answer);
             } else {
-                success = tryToOpenLetter(answer.charAt(0));
+                state = tryToOpenLetter(answer.charAt(0));
             }
-            if (Boolean.TRUE.equals(success)) {
-                consoleWriter.printSuccessMessage();
-                if (tryToGuessWord(maskedWord.toString())) {
-                    return exitGame();
+
+            switch (state) {
+                case SUCCESS -> {
+                    consoleWriter.printSuccessMessage();
+                    if (tryToGuessWord(maskedWord.toString()) == GameState.WIN) {
+                        state = GameState.WIN;
+                    }
                 }
-            } else if (Boolean.FALSE.equals(success)) {
-                consoleWriter.printFailureMessage(answer);
-                gallows.buildNextElement();
+                case WRONG_INPUT -> {
+                    continue;
+                }
+                case FAILURE -> {
+                    consoleWriter.printFailureMessage(answer);
+                    gallows.buildNextElement();
+                }
+                default -> {
+                }
             }
             consoleWriter.printStatistics(remainingLetters, gallows.getLeftAttempts());
             consoleWriter.printWordToGuess(maskedWord.toString());
+            if (state == GameState.WIN) {
+                return state;
+            }
             String gallowsString = gallows.getGallows();
             if (gallowsString != null) {
                 consoleWriter.printGallows(gallowsString);
             }
         }
-        consoleWriter.printLoseMessage();
-        consoleWriter.printWordToGuess(currentWord);
-        return exitGame();
+        return GameState.LOSE;
     }
 
-    private Boolean tryToGuessWord(String answer) {
+    private GameState tryToGuessWord(String answer) {
         if (answer.equals(currentWord)) {
             consoleWriter.printWinMessage();
-            return true;
+            return GameState.WIN;
         }
-        return false;
+        return GameState.FAILURE;
     }
 
-    private Boolean exitGame() {
+    private GameState exitGame() {
         consoleWriter.printContinueMessage();
         String continueGame = scanner.nextLine();
         if (continueGame.equals("Yes")) {
-            return true;
+            return GameState.CONTINUE;
         }
         consoleWriter.printFinalMessage();
-        return false;
+        return GameState.EXIT;
     }
 
-    private Boolean tryToOpenLetter(char letter) {
+    private GameState tryToOpenLetter(char letter) {
         if (remainingLetters.contains(letter)) {
-            boolean success = false;
+            GameState state = GameState.FAILURE;
             for (int index = 0; index < currentWord.length(); index++) {
                 if (currentWord.charAt(index) == letter) {
                     maskedWord.setCharAt(index, letter);
-                    success = true;
+                    state = GameState.SUCCESS;
                 }
             }
             remainingLetters.remove(letter);
-            return success;
+            return state;
         }
         consoleWriter.printWrongLetterMessage();
-        return null;
+        return GameState.WRONG_INPUT;
     }
 
     private void updateLetters() {
