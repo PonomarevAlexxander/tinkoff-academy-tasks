@@ -54,15 +54,17 @@ public final class HangmanGame {
         gallows.destroyGallows();
         updateLetters();
 
-        GameState state = runTurn();
-        switch (state) {
+        GameState turnState = runTurn();
+        switch (turnState) {
             case EXIT -> {
-                return state;
+                consoleWriter.printFinalMessage();
+                return turnState;
             }
             case LOSE -> {
                 consoleWriter.printLoseMessage();
                 consoleWriter.printWordToGuess(currentWord);
             }
+            case WIN -> consoleWriter.printWinMessage();
             default -> {
             }
         }
@@ -71,45 +73,34 @@ public final class HangmanGame {
 
     private GameState runTurn() {
         while (gallows.getLeftAttempts() > 0) {
-            consoleWriter.printAskingMessage();
-            String answer = scanner.nextLine();
-            if (answer.equals(EXIT)) {
-                consoleWriter.printFinalMessage();
-                return GameState.EXIT;
-            }
-            if (answer.isBlank()) {
-                continue;
-            }
-
-            GameState state;
-            if (answer.length() > 1) {
-                state = tryToGuessWord(answer);
-            } else {
-                state = tryToOpenLetter(answer.charAt(0));
-            }
-
-            switch (state) {
+            String answer = getNextAnswer();
+            GameState tryState = tryToAnswer(answer);
+            switch (tryState) {
+                case WIN -> {
+                    return GameState.WIN;
+                }
                 case SUCCESS -> {
                     consoleWriter.printSuccessMessage();
                     if (tryToGuessWord(maskedWord.toString()) == GameState.WIN) {
-                        state = GameState.WIN;
+                        return GameState.WIN;
                     }
-                }
-                case WRONG_INPUT -> {
-                    continue;
                 }
                 case FAILURE -> {
                     consoleWriter.printFailureMessage(answer);
                     gallows.buildNextElement();
                 }
+                case WRONG_INPUT -> {
+                    continue;
+                }
+                case EXIT -> {
+                    return tryState;
+                }
                 default -> {
                 }
             }
+
             consoleWriter.printStatistics(remainingLetters, gallows.getLeftAttempts());
             consoleWriter.printWordToGuess(maskedWord.toString());
-            if (state == GameState.WIN) {
-                return state;
-            }
             String gallowsString = gallows.getGallows();
             if (gallowsString != null) {
                 consoleWriter.printGallows(gallowsString);
@@ -118,9 +109,26 @@ public final class HangmanGame {
         return GameState.LOSE;
     }
 
+    private String getNextAnswer() {
+        consoleWriter.printAskingMessage();
+        return scanner.nextLine();
+    }
+
+    private GameState tryToAnswer(String answer) {
+        if (answer.equals(EXIT)) {
+            return GameState.EXIT;
+        }
+        if (answer.isBlank()) {
+            return GameState.WRONG_INPUT;
+        }
+        if (answer.length() > 1) {
+            return tryToGuessWord(answer);
+        }
+        return tryToOpenLetter(answer.charAt(0));
+    }
+
     private GameState tryToGuessWord(String answer) {
         if (answer.equals(currentWord)) {
-            consoleWriter.printWinMessage();
             return GameState.WIN;
         }
         return GameState.FAILURE;
