@@ -11,13 +11,13 @@ class PriorityStockMarketTest {
     @Test
     void test_PriorityStockMarket_with_normal_data() {
         PriorityStockMarket market = new PriorityStockMarket();
-        market.add(new Stock(20));
-        market.add(new Stock(2));
-        market.add(new Stock(1000));
-        market.add(new Stock(4));
+        market.add(new Stock("AAPL", 20));
+        market.add(new Stock("PYPL", 2));
+        market.add(new Stock("AMZN", 1000));
+        market.add(new Stock("ABNB", 4));
         assertThat(market.mostValuableStock().price())
             .isEqualTo(1000);
-        market.remove(new Stock(1000));
+        market.remove(new Stock("AMZN", 1000));
         assertThat(market.mostValuableStock().price())
             .isEqualTo(20);
     }
