@@ -15,9 +15,9 @@ class ContactsTest {
 
     @ParameterizedTest
     @MethodSource("provideValidContacts")
-    void test_Contacts_parsContacts_on_valid_data(List<String> contacts, String compareOrder, List<Object> exprexted) {
+    void test_Contacts_parsContacts_on_valid_data(List<String> contacts, String compareOrder, List<Contacts> expected) {
         assertThat(Contacts.parseContacts(contacts, compareOrder))
-            .isEqualTo(exprexted);
+            .isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -33,12 +33,21 @@ class ContactsTest {
             Arguments.of(
                 List.of("John Locke", "Thomas Aquinas", "David Hume", "Rene Descartes"),
                 "ASC",
-                List.of("Thomas Aquinas", "Rene Descartes", "David Hume", "John Locke")
+                List.of(
+                    Contact.fromString("Thomas Aquinas"),
+                    Contact.fromString("Rene Descartes"),
+                    Contact.fromString("David Hume"),
+                    Contact.fromString("John Locke")
+                )
             ),
             Arguments.of(
                 List.of("Paul Erdos", "Leonhard Euler", "Carl Gauss"),
                 "DESC",
-                List.of("Carl Gauss", "Leonhard Euler", "Paul Erdos")
+                List.of(
+                    Contact.fromString("Carl Gauss"),
+                    Contact.fromString("Leonhard Euler"),
+                    Contact.fromString("Paul Erdos")
+                )
             ),
             Arguments.of(
                 new ArrayList<String>(),
