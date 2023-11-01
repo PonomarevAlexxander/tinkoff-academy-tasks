@@ -16,7 +16,7 @@ class StockTest {
 
     @ParameterizedTest
     @NullSource
-    void test_Stock_with_unexpected_price_data(String ticker) {
+    void test_Stock_with_unexpected_ticker_data(String ticker) {
         assertThatThrownBy(() -> new Stock(ticker, 1))
             .isInstanceOf(IllegalArgumentException.class);
     }
