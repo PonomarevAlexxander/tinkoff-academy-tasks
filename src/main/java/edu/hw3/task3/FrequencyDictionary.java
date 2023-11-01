@@ -14,9 +14,7 @@ public class FrequencyDictionary {
         Objects.requireNonNull(objects);
         Map<T, Integer> frequency = new HashMap<>();
         for (T object : objects) {
-            int currentFreq = frequency.getOrDefault(object, 0);
-            currentFreq++;
-            frequency.put(object, currentFreq);
+            frequency.merge(object, 1, Integer::sum);
         }
         return frequency;
     }
