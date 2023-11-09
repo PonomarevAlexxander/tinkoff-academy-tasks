@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AnimalsOperator {
     private static final String NULL_EXCEPTION_MESSAGE = "list of animals must be not null";
@@ -56,12 +58,11 @@ public class AnimalsOperator {
     public static Map<Animal.Type, Animal> getHeaviestByType(List<Animal> animals) {
         checkIfNull(animals);
         return animals.stream()
-            .collect(Collectors.groupingBy(
+            .collect(Collectors.toMap(
                 Animal::type,
-                Collectors.maxBy(Comparator.comparing(Animal::weight))
-            ))
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, value -> value.getValue().orElseThrow()));
+                Function.identity(),
+                (oldValue, newValue) -> newValue.weight() > oldValue.weight() ? newValue : oldValue
+            ));
     }
 
     public static Animal getKthOldest(List<Animal> animals, int k) {
@@ -166,21 +167,25 @@ public class AnimalsOperator {
 
     public static Map<String, Set<ValidationError>> validateAnimals(List<Animal> animals) {
         checkIfNull(animals);
-        return animals.stream()
-            .map(animal -> Map.entry(animal.name(), AnimalValidationError.validateAnimal(animal)))
-            .filter(entry -> !entry.getValue().isEmpty())
+        return getStreamOfValidatedAnimals(animals)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public static Map<String, String> getValidationInformation(List<Animal> animals) {
         checkIfNull(animals);
-        return validateAnimals(animals).entrySet().stream()
+        return getStreamOfValidatedAnimals(animals)
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
-                entry -> "Errors in fields: " + String.join(", ", entry.getValue().stream()
+                entry -> entry.getValue().stream()
                     .map(ValidationError::getFieldName)
-                    .toList())
+                    .collect(Collectors.joining(", ", "Errors in fields: ", "."))
             ));
+    }
+
+    private static Stream<Map.Entry<String, Set<ValidationError>>> getStreamOfValidatedAnimals(List<Animal> animals) {
+        return animals.stream()
+            .map(animal -> Map.entry(animal.name(), AnimalValidationError.validateAnimal(animal)))
+            .filter(entry -> !entry.getValue().isEmpty());
     }
 
     private static void checkIfNull(List<Animal> animals) {
