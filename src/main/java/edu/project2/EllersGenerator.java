@@ -32,11 +32,13 @@ public class EllersGenerator implements MazeGenerator {
             buildHorizontalWalls(row, setRepresentation);
         }
         buildLastRow(setRepresentation);
-        maze = Arrays.stream(maze)
-            .map(cells -> Arrays.stream(cells)
-                .map(cell -> Objects.isNull(cell) ? new Cell(Cell.CellType.PASSAGE) : cell)
-                .toArray(Cell[]::new))
-            .toArray(Cell[][]::new);
+        for (int row = 0; row < nRows; row++) {
+            for (int column = 0; column < nColumns; column++) {
+                if (maze[row][column] == null) {
+                    maze[row][column] = new Cell(Cell.CellType.PASSAGE, row, column);
+                }
+            }
+        }
         return new Maze(height, width, maze);
     }
 
@@ -47,7 +49,7 @@ public class EllersGenerator implements MazeGenerator {
             Point current = new Point(column, nRows - 2);
             Point next = new Point(column + 2, nRows - 2);
             if (!areInSameSet(current, next, lastRepresentation)) {
-                maze[nRows - 2][column + 1] = new Cell(Cell.CellType.PASSAGE);
+                maze[nRows - 2][column + 1] = new Cell(Cell.CellType.PASSAGE, nRows - 2, column + 1);
             }
         }
     }
@@ -58,9 +60,9 @@ public class EllersGenerator implements MazeGenerator {
             .collect(Collectors.toMap(Function.identity(), value -> 1, (oldV, one) -> oldV + 1));
         for (int column = 1; column < nColumns - 1; column += 2) {
             if (needToBuildWall() && (elementsWithNoHorizontalWalls.get(setRepresentation[column]) > 1)) {
-                maze[row + 1][column] = new Cell(Cell.CellType.WALL);
-                maze[row + 1][column + 1] = new Cell(Cell.CellType.WALL);
-                maze[row + 1][column - 1] = new Cell(Cell.CellType.WALL);
+                maze[row + 1][column] = new Cell(Cell.CellType.WALL, row + 1, column);
+                maze[row + 1][column + 1] = new Cell(Cell.CellType.WALL, row + 1, column + 1);
+                maze[row + 1][column - 1] = new Cell(Cell.CellType.WALL, row + 1, column - 1);
                 elementsWithNoHorizontalWalls.compute(setRepresentation[column], (key, value) -> value - 1);
                 setRepresentation[column] = null;
             }
@@ -84,9 +86,9 @@ public class EllersGenerator implements MazeGenerator {
     }
 
     private void buildRightWall(Point position) {
-        maze[position.y() - 1][position.x() + 1] = new Cell(Cell.CellType.WALL);
-        maze[position.y()][position.x() + 1] = new Cell(Cell.CellType.WALL);
-        maze[position.y() + 1][position.x() + 1] = new Cell(Cell.CellType.WALL);
+        maze[position.y() - 1][position.x() + 1] = new Cell(Cell.CellType.WALL, position.y() - 1, position.x() + 1);
+        maze[position.y()][position.x() + 1] = new Cell(Cell.CellType.WALL, position.y(), position.x() + 1);
+        maze[position.y() + 1][position.x() + 1] = new Cell(Cell.CellType.WALL, position.y() + 1, position.x() + 1);
     }
 
     private boolean areInSameSet(Point current, Point next, Long[] setRepresentation) {
@@ -128,7 +130,7 @@ public class EllersGenerator implements MazeGenerator {
     private void fillBorder() {
         for (int row = 0; row < nRows; row++) {
             for (int column = 0; column < nColumns;) {
-                maze[row][column] = new Cell(Cell.CellType.WALL);
+                maze[row][column] = new Cell(Cell.CellType.WALL, row, column);
                 if (row % (nRows - 1) == 0) {
                     column++;
                 } else {
