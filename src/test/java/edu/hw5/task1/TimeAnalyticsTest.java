@@ -14,7 +14,7 @@ class TimeAnalyticsTest {
             "2022-04-01, 21:30 - 2022-04-02, 01:20"
         );
         assertThat(TimeAnalytics.averageSessionTime(durations))
-            .isEqualTo(Duration.parse("PT3H40M"));
+            .isEqualTo(Duration.parse("PT3H40M0S"));
     }
 
 }
