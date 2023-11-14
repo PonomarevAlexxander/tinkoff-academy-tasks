@@ -16,11 +16,11 @@ public class TimeAnalytics {
     }
 
     public static Duration averageSessionTime(List<String> sessionsTime) {
-        long durationInMilliseconds = sessionsTime.stream()
+        return Duration.ofMillis((long) sessionsTime.stream()
             .map(TimeAnalytics::extractDuration)
             .mapToLong(Duration::toMillis)
-            .sum();
-        return Duration.ofMillis(durationInMilliseconds / sessionsTime.size());
+            .average()
+            .orElseThrow());
     }
 
     private static Duration extractDuration(String timePeriod) {
