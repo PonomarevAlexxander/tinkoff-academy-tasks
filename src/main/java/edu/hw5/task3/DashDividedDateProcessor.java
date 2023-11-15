@@ -22,9 +22,6 @@ public class DashDividedDateProcessor extends DateFormatProcessor {
             int day = Integer.parseInt(matcher.group("day"));
             return Optional.of(LocalDate.of(year, month, day));
         }
-        if (nextProcessor != null) {
-            return nextProcessor.parseDate(dateString);
-        }
-        return Optional.empty();
+        return super.parseDate(dateString);
     }
 }

@@ -25,10 +25,7 @@ public class WordDateProcessor extends DateFormatProcessor {
         if (day.isPresent()) {
             return Optional.of(LocalDate.now().plusDays(day.get().daysShift));
         }
-        if (nextProcessor != null) {
-            return nextProcessor.parseDate(dateString);
-        }
-        return Optional.empty();
+        return super.parseDate(dateString);
     }
 
     private record DayReference(String day, Integer daysShift) implements Comparable<DayReference> {

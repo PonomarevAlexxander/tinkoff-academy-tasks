@@ -19,9 +19,6 @@ public class DayShiftDateProcessor extends DateFormatProcessor {
             int daysShift = Integer.parseInt(matcher.group(1));
             return Optional.of(LocalDate.now().minusDays(daysShift));
         }
-        if (nextProcessor != null) {
-            return nextProcessor.parseDate(dateString);
-        }
-        return Optional.empty();
+        return super.parseDate(dateString);
     }
 }

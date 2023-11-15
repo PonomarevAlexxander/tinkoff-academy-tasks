@@ -10,5 +10,10 @@ public abstract class DateFormatProcessor {
         this.nextProcessor = nextProcessor;
     }
 
-    public abstract Optional<LocalDate> parseDate(String dateString);
+    public Optional<LocalDate> parseDate(String dateString) {
+        if (nextProcessor != null) {
+            return nextProcessor.parseDate(dateString);
+        }
+        return Optional.empty();
+    }
 }
