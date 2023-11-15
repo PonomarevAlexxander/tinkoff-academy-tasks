@@ -10,10 +10,16 @@ import org.jetbrains.annotations.NotNull;
 public class FridaysFinder {
     private static final TemporalAdjuster NEXT_FRIDAY_13_TH = temporal -> {
         LocalDate date = LocalDate.from(temporal);
-        return findAllFriday13th(date.getYear()).stream()
-            .filter(dateTime -> dateTime.isAfter(date))
-            .findFirst()
-            .orElse(findAllFriday13th(date.getYear() + 1).get(0));
+        int day = date.getDayOfMonth();
+        if (day > 13) {
+            date = date.withDayOfMonth(13).plusMonths(1);
+        } else {
+            date = date.withDayOfMonth(13);
+        }
+        while (!date.getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
+            date = date.plusMonths(1);
+        }
+        return date;
     };
 
     private FridaysFinder() {
