@@ -10,6 +10,7 @@ class StringUtilsTest {
     @CsvSource({
         "achfdbaabgabcaabg,abc,true",
         "hellobuddies,hell,true",
+        "assf\\daasda,f\\d,true",
         ",hi,false",
         "some,,false"
     })
