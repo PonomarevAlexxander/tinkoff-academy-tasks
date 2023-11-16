@@ -8,6 +8,8 @@ class PlateNumberValidatorTest {
 
     @ParameterizedTest
     @CsvSource({
+        "А990ВЕ099,false",
+        "А990ВЕ199,true",
         "А001ВЕ99,true",
         "А000ВЕ99,false",
         "А123ВЕ777,true",
