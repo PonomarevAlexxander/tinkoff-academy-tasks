@@ -25,16 +25,13 @@ class FileClonerTest {
 
     @AfterAll
     static void removeFile() throws IOException {
-        String testFileName = TEST_FILE.getFileName().toString().split("\\.")[0];
-        try (var pathStream = Files.list(TEST_FILE.getParent())) {
-            pathStream
-                .filter(path -> path.getFileName().toString().startsWith(testFileName))
-                .forEach(path1 -> {
-                    try {
-                        Files.delete(path1);
-                    } catch (IOException ignored) {
-                    }
-                });
+        try (var pathStream = Files.newDirectoryStream(TEST_FILE.getParent(), "testfile*.txt")) {
+            pathStream.forEach(path -> {
+                try {
+                    Files.delete(path);
+                } catch (IOException ignored) {
+                }
+            });
         }
     }
 
