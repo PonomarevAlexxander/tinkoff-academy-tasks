@@ -23,7 +23,10 @@ public class FileGenerator {
         try (OutputStream stream = Files.newOutputStream(createdFile);
              CheckedOutputStream checkedOutputStream = new CheckedOutputStream(stream, checksum);
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(checkedOutputStream);
-             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bufferedOutputStream, StandardCharsets.UTF_8);
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+                 bufferedOutputStream,
+                 StandardCharsets.UTF_8
+             );
              PrintWriter printWriter = new PrintWriter(outputStreamWriter)) {
             printWriter.print(text);
         }

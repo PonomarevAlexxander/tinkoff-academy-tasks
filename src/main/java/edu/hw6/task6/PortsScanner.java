@@ -21,8 +21,7 @@ public class PortsScanner {
         Map.entry(49152, "Windows RPC"),
         Map.entry(5353, "mDNS"),
         Map.entry(5672, "AMQP"),
-        Map.entry(5355, "LLMNR"),
-        Map.entry(49153, "Windows RPC")
+        Map.entry(5355, "LLMNR")
     );
 
     private PortsScanner() {
@@ -43,6 +42,7 @@ public class PortsScanner {
             .toList();
     }
 
+    @SuppressWarnings("EmptyBlock")
     private static Port checkPort(int port) {
         String service = PORT_SERVICE.getOrDefault(port, "");
         try (ServerSocket tcp = new ServerSocket(port)) {
