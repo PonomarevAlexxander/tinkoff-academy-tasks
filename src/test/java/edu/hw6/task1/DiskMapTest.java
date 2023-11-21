@@ -31,29 +31,23 @@ class DiskMapTest {
     }
 
     @Test
-    void test_DiskMap() {
-        try (DiskMap kvData = new DiskMap(TEST_FILE)) {
-            assertThat(kvData.entrySet())
-                .isEqualTo(Set.of(
-                    Map.entry("key", "value"),
-                    Map.entry("apple", "fruit"),
-                    Map.entry("hello", "world"),
-                    Map.entry("some", "data")
-                ));
-            kvData.remove("apple");
-            kvData.put("new", "data");
-        } catch (IOException ignore) {
-        }
-
-        try (DiskMap kvData = new DiskMap(TEST_FILE)) {
-            assertThat(kvData.entrySet())
-                .isEqualTo(Set.of(
-                    Map.entry("key", "value"),
-                    Map.entry("hello", "world"),
-                    Map.entry("new", "data"),
-                    Map.entry("some", "data")
-                ));
-        } catch (IOException ignore) {
-        }
+    void test_DiskMap() throws IOException {
+        DiskMap kvData = new DiskMap(TEST_FILE);
+        assertThat(kvData.entrySet())
+            .isEqualTo(Set.of(
+                Map.entry("key", "value"),
+                Map.entry("apple", "fruit"),
+                Map.entry("hello", "world"),
+                Map.entry("some", "data")
+            ));
+        kvData.remove("apple");
+        kvData.put("new", "data");
+        assertThat(kvData.entrySet())
+            .isEqualTo(Set.of(
+                Map.entry("key", "value"),
+                Map.entry("hello", "world"),
+                Map.entry("new", "data"),
+                Map.entry("some", "data")
+            ));
     }
 }

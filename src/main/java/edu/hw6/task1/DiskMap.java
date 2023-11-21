@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DiskMap implements Map<String, String>, AutoCloseable {
+public class DiskMap implements Map<String, String> {
     private final HashMap<String, String> data = new HashMap<>();
     private final Path dataFile;
 
@@ -22,23 +22,8 @@ public class DiskMap implements Map<String, String>, AutoCloseable {
         if (Files.notExists(file)) {
             Files.createDirectory(file);
         } else {
-            mergeDataFrom(dataFile);
+            load();
         }
-    }
-
-    public void mergeDataFrom(Path file) throws IOException {
-        List<String> lines = Files.readAllLines(file);
-        data.putAll(lines.stream()
-            .map(this::extractKeyValue)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-    }
-
-    public void saveAs(Path file) throws IOException {
-        Files.write(file, data.entrySet().stream()
-            .map(entry -> String.join(":", entry.getKey(), entry.getValue()))
-            .toList());
     }
 
     @Override
@@ -69,22 +54,28 @@ public class DiskMap implements Map<String, String>, AutoCloseable {
     @Nullable
     @Override
     public String put(String key, String value) {
-        return data.put(key, value);
+        String result = data.put(key, value);
+        save();
+        return result;
     }
 
     @Override
     public String remove(Object key) {
-        return data.remove(key);
+        String result = data.remove(key);
+        save();
+        return result;
     }
 
     @Override
     public void putAll(@NotNull Map<? extends String, ? extends String> m) {
         data.putAll(m);
+        save();
     }
 
     @Override
     public void clear() {
         data.clear();
+        save();
     }
 
     @NotNull
@@ -105,16 +96,34 @@ public class DiskMap implements Map<String, String>, AutoCloseable {
         return data.entrySet();
     }
 
+    private void load() {
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(dataFile);
+        } catch (IOException e) {
+            return;
+        }
+        data.putAll(lines.stream()
+            .map(this::extractKeyValue)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    }
+
+    private void save() {
+        try {
+            Files.write(dataFile, data.entrySet().stream()
+                .map(entry -> String.join(":", entry.getKey(), entry.getValue()))
+                .toList());
+        } catch (IOException ignored) {
+        }
+    }
+
     private Optional<Map.Entry<String, String>> extractKeyValue(String fileLine) {
         String[] keyValue = fileLine.strip().split(":");
         if (keyValue.length == 2) {
             return Optional.of(Map.entry(keyValue[0], keyValue[1]));
         }
         return Optional.empty();
-    }
-
-    @Override
-    public void close() throws IOException {
-        saveAs(dataFile);
     }
 }
