@@ -28,10 +28,10 @@ public class HackerNews {
         } catch (URISyntaxException e) {
             return new long[] {};
         }
-        HttpClient client = HttpClient.newHttpClient();
+
         HttpResponse<String> response;
         try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            response = sendHttpRequest(request);
         } catch (IOException | InterruptedException e) {
             return null;
         }
@@ -48,14 +48,22 @@ public class HackerNews {
         } catch (URISyntaxException e) {
             return null;
         }
-        HttpClient client = HttpClient.newHttpClient();
+
         HttpResponse<String> response;
         try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            response = sendHttpRequest(request);
         } catch (IOException | InterruptedException e) {
             return null;
         }
         return extractTitleFromJson(response.body());
+    }
+
+    private static HttpResponse<String> sendHttpRequest(HttpRequest request) throws IOException, InterruptedException {
+        HttpResponse<String> response;
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        }
+        return response;
     }
 
     private static long[] fromJson(String json) {
