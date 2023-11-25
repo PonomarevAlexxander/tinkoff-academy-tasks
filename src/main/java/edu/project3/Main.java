@@ -20,7 +20,7 @@ public class Main {
 
     }
 
-    @SuppressWarnings("RegexpSinglelineJava")
+    @SuppressWarnings({"RegexpSinglelineJava", "ReturnCount"})
     public static void main(String[] args) {
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;

@@ -28,7 +28,7 @@ class FilesLogsProviderTest {
         Files.delete(TEST_FILE);
     }
     @Test
-    void test_FilesLogProvider() {
+    void test_FilesLogProvider() throws IOException, InterruptedException {
         LogParser parser = new NginxLogParser();
         LogsProvider provider = new FilesLogsProvider(List.of(TEST_FILE), parser);
         assertThat(provider.getLogs().stream()

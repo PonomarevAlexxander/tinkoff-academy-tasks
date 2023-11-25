@@ -83,9 +83,9 @@ class LogsAnalyzerTest {
     }
 
     @Test
-    void test_getStatusCodeFrequency() {
+    void test_getMostFrequentStatusCodes() {
         LogsAnalyzer analyzer = new LogsAnalyzer(LOGS);
-        assertThat(analyzer.getStatusCodeFrequency().get(200))
+        assertThat(analyzer.getMostFrequentStatusCodes(1).get(200))
             .isEqualTo(2);
     }
 

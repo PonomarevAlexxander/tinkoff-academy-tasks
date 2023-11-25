@@ -1,5 +1,6 @@
 package edu.project3;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +12,7 @@ class HttpLogsProviderTest {
         "https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs";
 
     @Test
-    void test_HttpLogsProvider() {
+    void test_HttpLogsProvider() throws IOException, InterruptedException {
         LogParser parser = new NginxLogParser();
         LogsProvider provider = new HttpLogsProvider(List.of(URI.create(TEST_ENDPOINT)), parser);
         assertThat(provider.getLogs().stream()

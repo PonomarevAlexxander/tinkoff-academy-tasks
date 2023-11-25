@@ -8,6 +8,7 @@ import java.util.Map;
 public class LogsPrinter {
     private final LogsAnalyzer analyzer;
     private final PrintStream out;
+    private static final int MAX_ROWS = 3;
 
     public LogsPrinter(LogsAnalyzer analyzer, PrintStream out) {
         this.analyzer = analyzer;
@@ -20,7 +21,7 @@ public class LogsPrinter {
             "Rush hours", getRushHours(),
             "Resources", getResources(),
             "Status codes", getStatusCodes()
-            );
+        );
         for (var table : tables.entrySet()) {
             out.print(render.render(table.getKey(), table.getValue()));
         }
@@ -47,13 +48,13 @@ public class LogsPrinter {
     }
 
     private List<List<String>> getResources() {
-        return analyzer.getMostFrequentResources(3).entrySet().stream()
+        return analyzer.getMostFrequentResources(MAX_ROWS).entrySet().stream()
             .map(entry -> List.of(entry.getKey(), entry.getValue().toString()))
             .toList();
     }
 
     private List<List<String>> getStatusCodes() {
-        return analyzer.getMostFrequentStatusCodes(3).entrySet().stream()
+        return analyzer.getMostFrequentStatusCodes(MAX_ROWS).entrySet().stream()
             .map(entry -> List.of(entry.getKey().toString(), entry.getValue().toString()))
             .toList();
     }
