@@ -19,8 +19,7 @@ public class HttpLogsProvider implements LogsProvider {
     }
 
     @Override
-    public List<LogRecord> getLogs() {
-        HttpClient client = HttpClient.newHttpClient();
+    public List<LogRecord> getLogs() throws IOException, InterruptedException {
         HttpResponse<Stream<String>> response;
         List<LogRecord> logs = new LinkedList<>();
         for (var uri : endpoints) {
@@ -28,10 +27,8 @@ public class HttpLogsProvider implements LogsProvider {
                 .uri(uri)
                 .GET()
                 .build();
-            try {
+            try (HttpClient client = HttpClient.newHttpClient()) {
                 response = client.send(request, HttpResponse.BodyHandlers.ofLines());
-            } catch (IOException | InterruptedException e) {
-                continue;
             }
             response.body().forEach(line -> logs.add(parser.parse(line)));
         }
