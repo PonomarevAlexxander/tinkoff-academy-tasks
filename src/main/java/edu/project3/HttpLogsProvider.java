@@ -29,8 +29,8 @@ public class HttpLogsProvider implements LogsProvider {
                 .build();
             try (HttpClient client = HttpClient.newHttpClient()) {
                 response = client.send(request, HttpResponse.BodyHandlers.ofLines());
+                response.body().forEach(line -> logs.add(parser.parse(line)));
             }
-            response.body().forEach(line -> logs.add(parser.parse(line)));
         }
         return logs;
     }
