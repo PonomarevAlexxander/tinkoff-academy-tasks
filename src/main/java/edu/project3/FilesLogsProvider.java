@@ -19,7 +19,7 @@ public class FilesLogsProvider implements LogsProvider {
     }
 
     @Override
-    public List<LogRecord> getLogs() {
+    public List<LogRecord> getLogs() throws IOException {
         List<LogRecord> logs = new LinkedList<>();
         for (Path file : files) {
             try (var reader  = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
@@ -28,8 +28,6 @@ public class FilesLogsProvider implements LogsProvider {
                     logs.add(parser.parse(line));
                     line = reader.readLine();
                 }
-            } catch (IOException e) {
-                return null;
             }
         }
         return logs;
