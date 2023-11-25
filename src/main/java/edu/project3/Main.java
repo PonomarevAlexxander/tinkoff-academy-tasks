@@ -32,49 +32,45 @@ public class Main {
         }
 
         String[] resources = cmd.getOptionValues("path");
-        String format = cmd.getOptionValue("format", null);
-
         List<Path> files = new LinkedList<>();
         List<URI> endpoints = new LinkedList<>();
         divideResources(resources, files, endpoints);
 
         LogParser logParser = new NginxLogParser();
-        LogsProvider provider;
-        List<LogRecord> logs = new LinkedList<>();
+        List<LogsProvider> providers = new LinkedList<>();
         if (!files.isEmpty()) {
-            provider = new FilesLogsProvider(files, logParser);
-            logs.addAll(provider.getLogs());
+            providers.add(new FilesLogsProvider(files, logParser));
         }
         if (!endpoints.isEmpty()) {
-            provider = new HttpLogsProvider(endpoints, logParser);
-            logs.addAll(provider.getLogs());
+            providers.add(new HttpLogsProvider(endpoints, logParser));
+        }
+        List<LogRecord> logs;
+        try {
+            logs = getLogs(providers);
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Error occurred: " + e);
+            return;
         }
         logs = filterLogsByTime(cmd, logs);
 
         LogsAnalyzer analyzer = new LogsAnalyzer(logs);
-        String header1 = "General information";
-        List<List<String>> metrics = List.of(
-            List.of("Metric", "Value"),
-            List.of("most frequent ip", analyzer.getMostFrequentIp()),
-            List.of("begin date", analyzer.getBeginDate().toString()),
-            List.of("end date", analyzer.getEndDate().toString()),
-            List.of("number of requests", Integer.toString(analyzer.getTotalNumberOfRequests())),
-            List.of("average response size in bytes", Integer.toString(analyzer.getAverageResponseSize()))
-        );
+        LogsPrinter printer = new LogsPrinter(analyzer, System.out);
+
+        String format = cmd.getOptionValue("format", "");
         TableRender render = switch (format) {
             case "markdown" -> new MarkdownTableRender();
             case "adoc" -> new AdocTableRender();
             default -> new AdocTableRender();
         };
-        System.out.print(render.render(header1, metrics));
+        printer.printStatistics(render);
+    }
 
-        String header2 = "Rush hours";
-        List<List<String>> rushHours = new LinkedList<>();
-        rushHours.add(List.of("Hour", "Number of requests"));
-        rushHours.addAll(analyzer.getRushHours().entrySet().stream()
-            .map(entry -> List.of(entry.getKey().toString(), entry.getValue().toString()))
-            .toList());
-        System.out.print(render.render(header2, rushHours));
+    private static List<LogRecord> getLogs(List<LogsProvider> providers) throws IOException, InterruptedException {
+        List<LogRecord> logs = new LinkedList<>();
+        for (LogsProvider provider : providers) {
+            logs.addAll(provider.getLogs());
+        }
+        return logs;
     }
 
     private static void divideResources(String[] resources, List<Path> files, List<URI> endpoints) {
