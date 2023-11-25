@@ -101,7 +101,7 @@ public class DiskMap implements Map<String, String> {
         try {
             lines = Files.readAllLines(dataFile);
         } catch (IOException e) {
-            return;
+            throw new IllegalStateException(e);
         }
         data.putAll(lines.stream()
             .map(this::extractKeyValue)
@@ -115,7 +115,8 @@ public class DiskMap implements Map<String, String> {
             Files.write(dataFile, data.entrySet().stream()
                 .map(entry -> String.join(":", entry.getKey(), entry.getValue()))
                 .toList());
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 
