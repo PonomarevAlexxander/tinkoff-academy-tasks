@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class LogsAnalyzer {
-    private List<LogRecord> logs;
+    private final List<LogRecord> logs;
 
     public LogsAnalyzer(List<LogRecord> logs) {
         this.logs = List.copyOf(logs);
@@ -39,7 +39,7 @@ public class LogsAnalyzer {
             .map(LogRecord::remoteAddress)
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
             .entrySet().stream()
-            .max(Comparator.comparing(Map.Entry::getValue))
+            .max(Map.Entry.comparingByValue())
             .orElse(Map.entry("", 0L))
             .getKey();
     }
@@ -57,9 +57,13 @@ public class LogsAnalyzer {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<Integer, Long> getStatusCodeFrequency() {
+    public Map<Integer, Long> getMostFrequentStatusCodes(int n) {
         return logs.stream()
-            .collect(Collectors.groupingBy(LogRecord::status, Collectors.counting()));
+            .collect(Collectors.groupingBy(LogRecord::status, Collectors.counting()))
+            .entrySet().stream()
+            .sorted((l, r) -> r.getValue().compareTo(l.getValue()))
+            .limit(n)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public int getAverageResponseSize() {
