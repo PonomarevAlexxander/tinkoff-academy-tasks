@@ -7,12 +7,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class AtomicExample {
     private static final AtomicLong COUNTER = new AtomicLong(0);
+    private static final int THREADS_NUMBER = 4;
 
     private AtomicExample() {
     }
 
     public static long incrementBy(int num) {
-        try (ExecutorService executor = Executors.newFixedThreadPool(4)) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(THREADS_NUMBER)) {
             for (int times = 0; times < num; times++) {
                 CompletableFuture.runAsync(COUNTER::incrementAndGet, executor).join();
             }
