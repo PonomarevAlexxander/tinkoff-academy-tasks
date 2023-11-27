@@ -16,7 +16,7 @@ public class ReadWritePersonDatabase implements PersonDatabase {
     ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     @Override
-    public synchronized void add(Person person) {
+    public void add(Person person) {
         lock.writeLock().lock();
         try {
             Person previous = persons.put(person.id(), person);
@@ -27,7 +27,7 @@ public class ReadWritePersonDatabase implements PersonDatabase {
     }
 
     @Override
-    public synchronized void delete(int id) {
+    public void delete(int id) {
         lock.writeLock().lock();
         try {
             Person oldValue = persons.remove(id);
@@ -38,7 +38,7 @@ public class ReadWritePersonDatabase implements PersonDatabase {
     }
 
     @Override
-    public synchronized List<Person> findByName(String name) {
+    public List<Person> findByName(String name) {
         lock.readLock().lock();
         List<Person> result;
         try {
@@ -50,7 +50,7 @@ public class ReadWritePersonDatabase implements PersonDatabase {
     }
 
     @Override
-    public synchronized List<Person> findByAddress(String address) {
+    public List<Person> findByAddress(String address) {
         lock.readLock().lock();
         List<Person> result;
         try {
@@ -62,7 +62,7 @@ public class ReadWritePersonDatabase implements PersonDatabase {
     }
 
     @Override
-    public synchronized List<Person> findByPhone(String phone) {
+    public List<Person> findByPhone(String phone) {
         lock.readLock().lock();
         List<Person> result;
         try {
