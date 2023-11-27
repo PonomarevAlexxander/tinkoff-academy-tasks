@@ -17,6 +17,7 @@ public class Factorial {
 
         return IntStream
             .range(2, number + 1)
+            .parallel()
             .mapToObj(BigInteger::valueOf)
             .reduce(BigInteger::multiply)
             .get();
