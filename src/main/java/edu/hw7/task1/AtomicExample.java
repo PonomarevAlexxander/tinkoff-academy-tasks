@@ -15,7 +15,7 @@ public class AtomicExample {
     public static long incrementBy(int num) {
         try (ExecutorService executor = Executors.newFixedThreadPool(THREADS_NUMBER)) {
             for (int times = 0; times < num; times++) {
-                CompletableFuture.runAsync(COUNTER::incrementAndGet, executor).join();
+                CompletableFuture.runAsync(COUNTER::incrementAndGet, executor);
             }
         }
         return COUNTER.get();
