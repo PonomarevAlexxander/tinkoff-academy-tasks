@@ -31,22 +31,9 @@ public class Main {
             return;
         }
 
-        String[] resources = cmd.getOptionValues("path");
-        List<Path> files = new LinkedList<>();
-        List<URI> endpoints = new LinkedList<>();
-        divideResources(resources, files, endpoints);
-
-        LogParser logParser = new NginxLogParser();
-        List<LogsProvider> providers = new LinkedList<>();
-        if (!files.isEmpty()) {
-            providers.add(new FilesLogsProvider(files, logParser));
-        }
-        if (!endpoints.isEmpty()) {
-            providers.add(new HttpLogsProvider(endpoints, logParser));
-        }
         List<LogRecord> logs;
         try {
-            logs = getLogs(providers);
+            logs = getLogs(cmd);
         } catch (IOException | InterruptedException e) {
             System.out.println("Error occurred: " + e);
             return;
@@ -65,7 +52,21 @@ public class Main {
         printer.printStatistics(render);
     }
 
-    private static List<LogRecord> getLogs(List<LogsProvider> providers) throws IOException, InterruptedException {
+    private static List<LogRecord> getLogs(CommandLine cmd) throws IOException, InterruptedException {
+        String[] resources = cmd.getOptionValues("path");
+
+        List<Path> files = new LinkedList<>();
+        List<URI> endpoints = new LinkedList<>();
+        divideResources(resources, files, endpoints);
+
+        LogParser logParser = new NginxLogParser();
+        List<LogsProvider> providers = new LinkedList<>();
+        if (!files.isEmpty()) {
+            providers.add(new FilesLogsProvider(files, logParser));
+        }
+        if (!endpoints.isEmpty()) {
+            providers.add(new HttpLogsProvider(endpoints, logParser));
+        }
         List<LogRecord> logs = new LinkedList<>();
         for (LogsProvider provider : providers) {
             logs.addAll(provider.getLogs());
