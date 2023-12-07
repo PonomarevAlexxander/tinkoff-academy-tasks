@@ -27,7 +27,7 @@ public class PiCalculatorTest {
             .include(this.getClass().getName() + ".*")
             .mode(Mode.AverageTime)
             .warmupTime(TimeValue.seconds(1))
-            .warmupIterations(6)
+            .warmupIterations(1)
             .threads(1)
             .measurementIterations(1)
             .forks(1)

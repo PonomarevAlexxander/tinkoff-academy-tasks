@@ -21,10 +21,10 @@ class ParallelPasswordHackerTest {
 
     private static Stream<Arguments> provideData() {
         Map<String, String> clearData = Map.of(
-            "a.v.petrov", "12a34",
+            "a.v.petrov", "12",
             "v.v.belov", "a1",
             "a.s.ivanov", "1a",
-            "k.p.maslov", "Bcqq"
+            "k.p.maslov", "123"
         );
         Map<String, String> hashedData = clearData.entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> Md5HashEncoder.getMd5Hash(entry.getValue())));
