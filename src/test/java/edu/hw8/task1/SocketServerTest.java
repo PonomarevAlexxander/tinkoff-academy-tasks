@@ -4,8 +4,11 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class SocketServerTest {
@@ -18,36 +21,38 @@ class SocketServerTest {
     private static final QuotesService quotesService = new QuotesService(quotes);
 
     @Test
-    void test_SocketServer_on_one_client() throws InterruptedException {
-        SocketServer server = new SocketServer(quotesService);
-        new Thread(() -> {
-            try {
-                server.start(6666, 4);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-        Thread.sleep(1000);
+    void test_SocketServer_on_one_client() throws Exception {
+        try (SocketServer server = new SocketServer(quotesService)) {
+            new Thread(() -> {
+                try {
+                    server.start(6666, 4);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+            Thread.sleep(1000);
 
-        SocketClient client = new SocketClient("localhost", 6666);
-        assertThat(client.getQuoteByTheme("глупый"))
-            .isEqualTo(quotes.get("глупый"));
+            SocketClient client = new SocketClient("localhost", 6666);
+            assertThat(client.getQuoteByTheme("глупый"))
+                .isEqualTo(quotes.get("глупый"));
+        }
     }
 
     @Test
-    void test_SocketServer_on_multiple_clients() throws InterruptedException {
-        SocketServer server = new SocketServer(quotesService);
-        new Thread(() -> {
-            try {
-                server.start(6666, 4);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-        Thread.sleep(1000);
-        try (ExecutorService clients = Executors.newFixedThreadPool(10)) {
-            for (int i = 0; i < 10 ; i++) {
-                CompletableFuture
+    void test_SocketServer_on_multiple_clients() {
+        try (SocketServer server = new SocketServer(quotesService)) {
+            CountDownLatch latch = new CountDownLatch(1);
+            new Thread(() -> {
+                try {
+                    latch.countDown();
+                    server.start(6666, 4);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+            latch.await();
+            try (ExecutorService clients = Executors.newFixedThreadPool(10)) {
+                Stream.generate(() -> CompletableFuture
                     .supplyAsync(() -> {
                         SocketClient client = new SocketClient("localhost", 6666);
                         return client.getQuoteByTheme("глупый");
@@ -55,9 +60,18 @@ class SocketServerTest {
                     .thenAcceptAsync((answer) -> {
                         assertThat(answer)
                             .isEqualTo(quotes.get("глупый"));
+                    }))
+                    .limit(10)
+                    .forEach(feature -> {
+                        try {
+                            feature.get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
                     });
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
     }
 }

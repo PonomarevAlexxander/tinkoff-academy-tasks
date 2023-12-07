@@ -12,31 +12,37 @@ import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SocketServer {
+public class SocketServer implements AutoCloseable {
     private final QuotesService service;
     private final Logger logger = LogManager.getLogger();
+    private ServerSocket server;
 
     public SocketServer(QuotesService service) {
         this.service = service;
     }
 
     public void start(int port, int threads) throws IOException {
-        try (ServerSocket server = new ServerSocket(port);
-             ExecutorService executorService = Executors.newFixedThreadPool(threads)) {
-            logger.info("Server starts");
-            while (true) {
-                try {
-                    Socket clientSocket = server.accept();
-                    CompletableFuture.runAsync(() -> handleConnection(clientSocket), executorService)
-                        .thenRun(() -> logger.info("Client handled"));
-                } catch (IOException e) {
-                    logger.error("Failed to accept socket");
-                }
+        server = new ServerSocket(port);
+        ExecutorService executorService = Executors.newFixedThreadPool(threads);
+        logger.info("Server starts");
+        while (!server.isClosed()) {
+            try {
+                Socket clientSocket = server.accept();
+                CompletableFuture.runAsync(() -> {
+                        try {
+                            handleConnection(clientSocket);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, executorService)
+                    .thenRun(() -> logger.info("Client handled"));
+            } catch (Exception e) {
+                logger.error("Failed to accept socket");
             }
         }
     }
 
-    private void handleConnection(Socket clientSocket) {
+    private void handleConnection(Socket clientSocket) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              PrintWriter writer = new PrintWriter(clientSocket.getOutputStream())) {
             String request = reader.readLine();
@@ -46,6 +52,13 @@ public class SocketServer {
             }
         } catch (IOException e) {
             logger.error(e);
+        } finally {
+            clientSocket.close();
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        server.close();
     }
 }
