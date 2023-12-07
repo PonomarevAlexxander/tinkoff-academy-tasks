@@ -31,7 +31,6 @@ public class FixedThreadPool implements ThreadPool {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
