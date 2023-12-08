@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -23,14 +24,16 @@ class SocketServerTest {
     @Test
     void test_SocketServer_on_one_client() throws Exception {
         try (SocketServer server = new SocketServer(quotesService)) {
+            CountDownLatch latch = new CountDownLatch(1);
             new Thread(() -> {
                 try {
+                    latch.countDown();
                     server.start(6666, 4);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }).start();
-            Thread.sleep(1000);
+            latch.await(5, TimeUnit.SECONDS);
 
             SocketClient client = new SocketClient("localhost", 6666);
             assertThat(client.getQuoteByTheme("глупый"))
@@ -50,7 +53,8 @@ class SocketServerTest {
                     throw new RuntimeException(e);
                 }
             }).start();
-            latch.await();
+            latch.await(5, TimeUnit.SECONDS);
+
             try (ExecutorService clients = Executors.newFixedThreadPool(10)) {
                 Stream.generate(() -> CompletableFuture
                     .supplyAsync(() -> {

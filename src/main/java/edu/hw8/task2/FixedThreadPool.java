@@ -1,5 +1,6 @@
 package edu.hw8.task2;
 
+import java.time.Duration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +39,9 @@ public class FixedThreadPool implements ThreadPool {
         started = false;
         for (var thread : threads) {
             try {
-                thread.join(timeout);
+                if (!thread.join(Duration.ofMillis(timeout))) {
+                    thread.interrupt();
+                }
             } catch (InterruptedException e) {
                 thread.interrupt();
             }
