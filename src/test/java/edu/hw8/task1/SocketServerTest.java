@@ -33,7 +33,8 @@ class SocketServerTest {
                     throw new RuntimeException(e);
                 }
             }).start();
-            latch.await(5, TimeUnit.SECONDS);
+            assertThat(latch.await(60, TimeUnit.SECONDS))
+                .isTrue();
 
             SocketClient client = new SocketClient("localhost", 6666);
             assertThat(client.getQuoteByTheme("глупый"))
@@ -53,7 +54,8 @@ class SocketServerTest {
                     throw new RuntimeException(e);
                 }
             }).start();
-            latch.await(5, TimeUnit.SECONDS);
+            assertThat(latch.await(60, TimeUnit.SECONDS))
+                .isTrue();
 
             try (ExecutorService clients = Executors.newFixedThreadPool(10)) {
                 Stream.generate(() -> CompletableFuture
