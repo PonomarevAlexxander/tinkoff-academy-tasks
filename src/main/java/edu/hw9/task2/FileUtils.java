@@ -10,8 +10,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class FileUtils {
     private FileUtils() {
@@ -44,14 +42,8 @@ public class FileUtils {
         if (!Files.isDirectory(directory)) {
             throw new IllegalArgumentException("expected directory in path");
         }
-        try (ForkJoinPool pool = new ForkJoinPool(threads);
-             Stream<Path> tree = Files.walk(directory)) {
-            List<Path> paths = tree
-                .filter(path -> Files.isDirectory(path) && pool.invoke(new FilesCounter(path)) > nFiles)
-                .collect(Collectors.toList());
-            return paths;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        try (ForkJoinPool pool = new ForkJoinPool(threads)) {
+            return pool.invoke(new FilesCounter(directory, nFiles));
         }
     }
 
@@ -87,21 +79,23 @@ public class FileUtils {
         }
     }
 
-    private static class FilesCounter extends RecursiveTask<Long> {
+    private static class FilesCounter extends RecursiveTask<List<Path>> {
         private final Path currentDirectory;
+        private final long minFilesNumber;
 
-        private FilesCounter(Path currentDirectory) {
+        private FilesCounter(Path currentDirectory, long minNumber) {
             this.currentDirectory = currentDirectory;
+            this.minFilesNumber = minNumber;
         }
 
         @Override
-        protected Long compute() {
-            List<ForkJoinTask<Long>> tasks = new LinkedList<>();
+        protected List<Path> compute() {
+            List<ForkJoinTask<List<Path>>> tasks = new LinkedList<>();
             long nFiles = 0;
             try (DirectoryStream<Path> paths = Files.newDirectoryStream(currentDirectory)) {
                 for (var path : paths) {
                     if (Files.isDirectory(path)) {
-                        tasks.add(new FilesCounter(path).fork());
+                        tasks.add(new FilesCounter(path, minFilesNumber).fork());
                     } else {
                         nFiles++;
                     }
@@ -109,9 +103,14 @@ public class FileUtils {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return nFiles + tasks.stream()
-                .mapToLong(ForkJoinTask::join)
-                .sum();
+            List<Path> dirs = new LinkedList<>(tasks.stream()
+                .map(ForkJoinTask::join)
+                .flatMap(List::stream)
+                .toList());
+            if (nFiles > minFilesNumber) {
+                dirs.add(currentDirectory);
+            }
+            return dirs;
         }
     }
 }
