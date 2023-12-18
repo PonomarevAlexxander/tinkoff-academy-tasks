@@ -14,17 +14,18 @@ public class FibonacciMethodGeneratorTest {
     @Test
     void test_class_creation()
         throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-//        Class<?> dynamicType = new ByteBuddy()
-//            .subclass(Object.class)
-//            .defineMethod("fib", long.class, Ownership.MEMBER, Visibility.PUBLIC)
-//            .withParameters(int.class)
-//            .intercept(new Implementation.Simple(new FibonacciMethodGenerator()))
-//            .make()
-//            .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
-//            .getLoaded();
-//        Object o = dynamicType.getDeclaredConstructor().newInstance();
-//        Method fib = dynamicType.getMethod("fib", int.class);
-//        assertThat(fib.invoke(o, 0))
-//            .isEqualTo(0L);
+        Class<?> dynamicType = new ByteBuddy()
+            .subclass(Object.class)
+            .defineMethod("fib", long.class, Ownership.MEMBER, Visibility.PUBLIC)
+            .withParameters(int.class)
+            .intercept(new Implementation.Simple(new FibonacciMethodGenerator()))
+            .make()
+            .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+            .getLoaded();
+
+        Object o = dynamicType.getDeclaredConstructor().newInstance();
+        Method fib = dynamicType.getMethod("fib", int.class);
+        assertThat(fib.invoke(o, 22))
+            .isEqualTo(17711L);
     }
 }
