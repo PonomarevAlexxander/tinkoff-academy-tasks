@@ -30,7 +30,7 @@ public class Main {
         Random random = new Random();
         List<Transformation> affins = new ArrayList<>();
         int index = 0;
-        while (affins.size() < 5) {
+        while (affins.size() < colors.size()) {
             try {
                 affins.add(LinearTransformations.affin(
                     random.nextDouble(-1, 1),
