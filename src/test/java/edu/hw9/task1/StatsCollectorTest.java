@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class StatsCollectorTest {
@@ -22,11 +23,51 @@ class StatsCollectorTest {
                 });
             }
             latch.await();
-            while (!collector.noTasks()) {
-            }
+            TimeUnit.SECONDS.sleep(1);
             Map<String, Double> stats = collector.stats();
             assertThat(stats.get("sum"))
                 .isNotNull();
+        }
+    }
+
+    @Test
+    void test_StatsCollector_min() throws InterruptedException {
+        try (StatsCollector collector = new StatsCollector(4)) {
+            collector.push("min", new double[] {1, -2, -56, 0, 12});
+            TimeUnit.SECONDS.sleep(1);
+            assertThat(collector.stats().get("min"))
+                .isEqualTo(-56);
+        }
+    }
+
+    @Test
+    void test_StatsCollector_max() throws InterruptedException {
+        try (StatsCollector collector = new StatsCollector(4)) {
+            collector.push("max", new double[] {1, -2, 56, 0, 12});
+            TimeUnit.SECONDS.sleep(1);
+            assertThat(collector.stats().get("max"))
+                .isEqualTo(56);
+        }
+    }
+
+    @Test
+    void test_StatsCollector_sum() throws InterruptedException {
+        try (StatsCollector collector = new StatsCollector(4)) {
+            collector.push("sum", new double[] {1, 2, 56, 0, 12});
+            TimeUnit.SECONDS.sleep(1);
+            assertThat(collector.stats().get("sum"))
+                .isEqualTo(71);
+        }
+    }
+
+    @Test
+    void test_StatsCollector_average() throws InterruptedException {
+        try (StatsCollector collector = new StatsCollector(4)) {
+            collector.push("average", new double[] {5, 5, 5, 5, 5});
+            collector.push("average", new double[] {1, 1, 1, 1, 1});
+            TimeUnit.SECONDS.sleep(1);
+            assertThat(collector.stats().get("average"))
+                .isEqualTo(3);
         }
     }
 }

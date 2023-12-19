@@ -10,13 +10,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class StatsCollector implements AutoCloseable {
     private final BlockingQueue<Metric> taskQueue = new LinkedBlockingQueue<>();
     private final ConcurrentHashMap<String, Double> statistics = new ConcurrentHashMap<>();
     private final ExecutorService service;
-    private final AtomicLong dataSize = new AtomicLong(0);
+    private Long dataSizeForAverage = 0L;
 
     public StatsCollector(int threads) {
         this.service = Executors.newFixedThreadPool(threads);
@@ -59,12 +58,16 @@ public class StatsCollector implements AutoCloseable {
                 }
                 case "average" -> {
                     double sum = Arrays.stream(metric.data()).sum();
-                    int length = metric.data().length;
-                    statistics.merge(
-                        metric.name(),
-                        sum / length,
-                        (oldValue, value) -> (oldValue * dataSize.addAndGet(length) + value) / dataSize.get()
-                    );
+                    long length = metric.data().length;
+                    synchronized (dataSizeForAverage) {
+                        statistics.merge(
+                            metric.name(),
+                            sum / length,
+                            (oldValue, value) -> (oldValue * dataSizeForAverage + value * length)
+                                / (dataSizeForAverage + length)
+                        );
+                        dataSizeForAverage += length;
+                    }
                 }
                 case "max" -> {
                     OptionalDouble max = Arrays.stream(metric.data()).max();
@@ -78,7 +81,7 @@ public class StatsCollector implements AutoCloseable {
                     if (min.isEmpty()) {
                         continue;
                     }
-                    statistics.merge(metric.name(), min.getAsDouble(), Double::max);
+                    statistics.merge(metric.name(), min.getAsDouble(), Double::min);
                 }
                 default -> {
                     throw new IllegalArgumentException("unsupported metric");
