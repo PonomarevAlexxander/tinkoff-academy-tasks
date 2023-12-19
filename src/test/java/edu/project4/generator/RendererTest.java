@@ -8,6 +8,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -25,15 +26,10 @@ public class RendererTest {
     public int threads = 4;
     public int x = 900;
     public int y = 900;
-
-    public List<Transformation> affins = List.of(
-        LinearTransformations.affin(0.5, 0, 0, 0.5, 0, 0, Color.WHITE),
-        LinearTransformations.affin(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, Color.WHITE)
-    );
-
-    public List<Transformation> variations = List.of(
-        NonLinearTransformations.cross()
-    );
+    public ParallelRenderer parallelRenderer;
+    public SequentialRenderer sequentialRenderer;
+    public List<Transformation> affins;
+    public List<Transformation> variations;
 
     @Test
     void benchmark_render() throws RunnerException {
@@ -52,15 +48,26 @@ public class RendererTest {
         new Runner(options).run();
     }
 
-    @Benchmark
-    public void benchmark_sequential_render() {
-        Renderer sequential = new SequentialRenderer();
-        sequential.render(FractalImage.create(x, y), affins, variations, samples, iterPerSample, false);
+    @Setup
+    public void setup() {
+        parallelRenderer = new ParallelRenderer(threads);
+        sequentialRenderer = new SequentialRenderer();
+        affins = List.of(
+            LinearTransformations.affin(0.5, 0, 0, 0.5, 0, 0, Color.WHITE),
+            LinearTransformations.affin(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, Color.WHITE)
+        );
+        variations = List.of(
+            NonLinearTransformations.cross()
+        );
     }
 
     @Benchmark
-    public void benchmark_parallel_render() {
-        Renderer sequential = new ParallelRenderer(threads);
-        sequential.render(FractalImage.create(x, y), affins, variations, samples, iterPerSample, false);
+    public FractalImage benchmark_sequential_render() {
+        return sequentialRenderer.render(FractalImage.create(x, y), affins, variations, samples, iterPerSample, false);
+    }
+
+    @Benchmark
+    public FractalImage benchmark_parallel_render() {
+        return parallelRenderer.render(FractalImage.create(x, y), affins, variations, samples, iterPerSample, false);
     }
 }
