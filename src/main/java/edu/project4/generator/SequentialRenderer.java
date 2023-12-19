@@ -6,8 +6,6 @@ import edu.project4.domain.Point;
 import edu.project4.transformations.Transformation;
 import java.awt.Color;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class SequentialRenderer extends Renderer {
     private final double minX = -1.5;
@@ -16,7 +14,6 @@ public class SequentialRenderer extends Renderer {
     private final double maxY = 1.5;
 
     @Override
-    @SuppressWarnings("MagicNumber")
     public FractalImage render(
         FractalImage canvas,
         List<Transformation> afines,

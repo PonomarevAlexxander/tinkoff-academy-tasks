@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Renderer {
+    @SuppressWarnings("MagicNumber")
+    protected int wormupIterations = 20;
+
     public abstract FractalImage render(
         FractalImage canvas,
         List<Transformation> afines,
@@ -27,7 +30,6 @@ public abstract class Renderer {
         BoundingRectangle rectangle,
         boolean symetri
     ) {
-        int wormupIterations = 20;
         for (int sample = 0; sample < samples; sample++) {
             Point point = new Point(
                 ThreadLocalRandom.current().nextDouble(rectangle.x(), rectangle.x() + rectangle.width()),
