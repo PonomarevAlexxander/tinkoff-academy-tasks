@@ -44,23 +44,30 @@ public abstract class Renderer {
                     point = new Point(-point.x(), point.y());
                 }
                 if (step >= 0 && rectangle.contains(point)) {
-                    plot(result, rectangle, point, affin.getColor());
+                    int x = result.width() - (int) Math.floor(
+                        ((rectangle.x() + rectangle.width() - point.x()) / rectangle.width()) * result.width());
+                    int y = result.height()
+                        - (int) Math.floor(((rectangle.y() - point.y()) / rectangle.height()) * result.height());
+                    if (result.contains(x, y)) {
+                        Pixel pixel = result.pixel(x, y);
+                        updatePixelColor(pixel, affin.getColor());
+                    }
                 }
             }
         }
     }
 
-    protected abstract void plot(FractalImage canvas, BoundingRectangle rectangle, Point point, Color affinColor);
-
-    protected Pixel updatePixel(Pixel pixel, Color affinColor) {
-        if (pixel.hitCount() == 0) {
-            return new Pixel(affinColor, 1, 0);
+    protected void updatePixelColor(Pixel pixel, Color affinColor) {
+        if (pixel.getHitCount() == 0) {
+            pixel.setColor(affinColor);
+            pixel.increaseHitCount(1);
         }
-        Color pixelColor = pixel.color();
+        Color pixelColor = pixel.getColor();
         int red = (pixelColor.getRed() + affinColor.getRed()) / 2;
         int green = (pixelColor.getGreen() + affinColor.getGreen()) / 2;
         int blue = (pixelColor.getBlue() + affinColor.getBlue()) / 2;
         Color newColor = new Color(red, green, blue);
-        return new Pixel(newColor, pixel.hitCount() + 1, 0);
+        pixel.setColor(newColor);
+        pixel.increaseHitCount(1);
     }
 }
