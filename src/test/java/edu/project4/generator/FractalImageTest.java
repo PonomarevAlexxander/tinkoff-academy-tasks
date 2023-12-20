@@ -50,18 +50,6 @@ class FractalImageTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "8, 8",
-        "0, 4"
-    })
-    void test_updatePixel(int x, int y) {
-        Pixel newPixel = new Pixel(Color.WHITE, 0, 0);
-        image.updatePixel(x, y, newPixel);
-        assertThat(image.pixel(x, y))
-            .isEqualTo(newPixel);
-    }
-
     @Test
     void test_data() {
         assertThat(image.data().length)

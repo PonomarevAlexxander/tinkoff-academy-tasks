@@ -27,7 +27,7 @@ public final class ImageUtils {
         BufferedImage bufferedImage = new BufferedImage(image.width(), image.height(), BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < image.width(); x++) {
             for (int y = 0; y < image.height(); y++) {
-                int rgb = image.pixel(x, y).color().getRGB();
+                int rgb = image.pixel(x, y).getColor().getRGB();
                 bufferedImage.setRGB(x, y, rgb);
             }
         }

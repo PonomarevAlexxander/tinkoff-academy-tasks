@@ -15,9 +15,11 @@ public class ImageCorrector implements ImageProcessor {
         double max = 0;
         for (int y = 0; y < image.height(); y++) {
             for (int x = 0; x < image.width(); x++) {
-                if (image.pixel(x, y).hitCount() != 0) {
-                    double normal = Math.log10(image.pixel(x, y).hitCount());
-                    image.updatePixel(x, y, new Pixel(image.pixel(x, y).color(), image.pixel(x, y).hitCount(), normal));
+                Pixel pixel = image.pixel(x, y);
+                int hitCount = pixel.getHitCount();
+                if (hitCount != 0) {
+                    double normal = Math.log10(hitCount);
+                    pixel.setNormal(normal);
                     if (normal > max) {
                         max = normal;
                     }
@@ -27,17 +29,16 @@ public class ImageCorrector implements ImageProcessor {
 
         for (int y = 0; y < image.height(); y++) {
             for (int x = 0; x < image.width(); x++) {
-                if (image.pixel(x, y).hitCount() != 0) {
-                    double normal = image.pixel(x, y).normal() / max;
-                    Color pixelColor = image.pixel(x, y).color();
-                    int red = (int) (pixelColor.getRed() * Math.pow(normal, 1.0 / gamma));
-                    int green = (int) (pixelColor.getGreen() * Math.pow(normal, 1.0 / gamma));
-                    int blue = (int) (pixelColor.getBlue() * Math.pow(normal, 1.0 / gamma));
-                    image.updatePixel(
-                        x,
-                        y,
-                        new Pixel(new Color(red, green, blue), image.pixel(x, y).hitCount(), normal)
-                    );
+                Pixel pixel = image.pixel(x, y);
+                if (pixel.getHitCount() != 0) {
+                    double normal = pixel.getNormal() / max;
+                    Color pixelColor = pixel.getColor();
+                    double pow = Math.pow(normal, 1.0 / gamma);
+                    int red = (int) (pixelColor.getRed() * pow);
+                    int green = (int) (pixelColor.getGreen() * pow);
+                    int blue = (int) (pixelColor.getBlue() * pow);
+                    pixel.setColor(new Color(red, green, blue));
+                    pixel.setNormal(normal);
                 }
             }
         }

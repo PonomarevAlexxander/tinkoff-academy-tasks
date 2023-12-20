@@ -28,8 +28,4 @@ public record FractalImage(Pixel[] data, int width, int height) {
         }
         return data[y * width + x];
     }
-
-    public void updatePixel(int x, int y, Pixel pixel) {
-        data[y * width + x] = pixel;
-    }
 }
