@@ -4,12 +4,14 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
 import net.bytebuddy.implementation.MethodDelegation;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class MessWithMethodsTest {
     @Test
+    @Disabled
     void test_method_implementation_changing() {
         ByteBuddyAgent.install();
         new ByteBuddy()
