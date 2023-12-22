@@ -5,7 +5,6 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.FixedValue;
 import org.junit.jupiter.api.Test;
 import static net.bytebuddy.matcher.ElementMatchers.isToString;
-import static net.bytebuddy.matcher.ElementMatchers.named;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class HelloBuddyTest {
