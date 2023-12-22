@@ -41,4 +41,18 @@ public class Pixel {
     public synchronized void setNormal(double normal) {
         this.normal = normal;
     }
+
+    public synchronized void updateColor(Color affinColor) {
+        if (hitCount == 0) {
+            color = affinColor;
+            hitCount += 1;
+            return;
+        }
+        Color pixelColor = color;
+        int red = (pixelColor.getRed() + affinColor.getRed()) / 2;
+        int green = (pixelColor.getGreen() + affinColor.getGreen()) / 2;
+        int blue = (pixelColor.getBlue() + affinColor.getBlue()) / 2;
+        color = new Color(red, green, blue);
+        hitCount += 1;
+    }
 }

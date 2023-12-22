@@ -4,7 +4,6 @@ import edu.project4.domain.BoundingRectangle;
 import edu.project4.domain.Pixel;
 import edu.project4.domain.Point;
 import edu.project4.transformations.Transformation;
-import java.awt.Color;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -50,24 +49,10 @@ public abstract class Renderer {
                         - (int) Math.floor(((rectangle.y() - point.y()) / rectangle.height()) * result.height());
                     if (result.contains(x, y)) {
                         Pixel pixel = result.pixel(x, y);
-                        updatePixelColor(pixel, affin.getColor());
+                        pixel.updateColor(affin.getColor());
                     }
                 }
             }
         }
-    }
-
-    protected void updatePixelColor(Pixel pixel, Color affinColor) {
-        if (pixel.getHitCount() == 0) {
-            pixel.setColor(affinColor);
-            pixel.increaseHitCount(1);
-        }
-        Color pixelColor = pixel.getColor();
-        int red = (pixelColor.getRed() + affinColor.getRed()) / 2;
-        int green = (pixelColor.getGreen() + affinColor.getGreen()) / 2;
-        int blue = (pixelColor.getBlue() + affinColor.getBlue()) / 2;
-        Color newColor = new Color(red, green, blue);
-        pixel.setColor(newColor);
-        pixel.increaseHitCount(1);
     }
 }
